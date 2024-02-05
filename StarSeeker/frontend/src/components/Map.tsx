@@ -1,9 +1,11 @@
-import { MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, ZoomControl, useMap, Marker, Popup} from 'react-leaflet';
 import { LatLngTuple } from 'leaflet';
 import React from 'react';
 import 'leaflet/dist/leaflet.css';
 import DisplayPoints from './DisplayPoints';
 import DisplaySurfaces from './DisplaySurfaces';
+import L from 'leaflet'
+L.Icon.Default.imagePath = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/';
 
 const loadEnvAsNumber = (
   variable: string | undefined,
@@ -37,6 +39,7 @@ type Props = {
     tenant: string;
     servicePath: string;
   };
+  pinData: any[];
 };
 
 const ClosePopup = () => {
@@ -45,7 +48,7 @@ const ClosePopup = () => {
   return null;
 };
 
-const Map: React.FC<Props> = ({ pointEntities, surfaceEntities, fiware }) => {
+const Map: React.FC<Props> = ({ pointEntities, surfaceEntities, fiware, pinData }) => {
   return (
     <MapContainer
       center={defaultPosition}
@@ -63,6 +66,16 @@ const Map: React.FC<Props> = ({ pointEntities, surfaceEntities, fiware }) => {
       ))}
       {surfaceEntities.map((data, index) => (
         <DisplaySurfaces key={index} data={data} fiware={fiware} />
+      ))}
+      {pinData.map((pin, index) => (
+        <Marker
+          key={index}
+          position={[pin.latitude, pin.longitude]}
+        >
+          <Popup>
+            <p>{pin.title}</p>
+          </Popup>
+        </Marker>
       ))}
       <ClosePopup />
     </MapContainer>
